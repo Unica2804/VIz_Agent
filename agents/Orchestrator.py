@@ -1,11 +1,12 @@
+from dotenv import load_dotenv
 from google.adk.agents import LlmAgent
-from google.adk.tools import AgentTool,ToolContext
 from google.adk.code_executors import BuiltInCodeExecutor
 from google.adk.models.google_llm import Gemini
+from google.adk.tools import AgentTool
 from google.genai import types
-from .tools.data_extractor import data_parser
-from ..utils.artifact import save_artifact
-from dotenv import load_dotenv
+
+from tools.data_extractor import data_parser
+from utils.artifact import save_artifact
 
 load_dotenv()
 
@@ -21,10 +22,10 @@ retry_config = types.HttpRetryOptions(
 Parser_agent = LlmAgent(
     name="File_Parser_Agent",
     model=Gemini(model="gemini-2.5-flash", retry_options=retry_config),
-    description=""" 
+    description="""
         An agent that parses files and extracts information based on user queries.
     """,
-    instruction= """ You are a File Parser Agent. Your task is to parse files
+    instruction=""" You are a File Parser Agent. Your task is to parse files
         and extract information using the provided tools based on user queries.
         tools:
         - data_parser: A tool that parses files and extracts structured data.
@@ -67,9 +68,7 @@ Stats_agent = LlmAgent(
         4. Execute Python code using the tool - 'coder_agent'. Return only the output
         5. Validate assumptions, note skew/outliers, and flag data-quality issues.
     """,
-    tools=[
-        AgentTool(coder_agent)
-    ]
+    tools=[AgentTool(coder_agent)],
 )
 
 # Visualization_Agent: It uses Coding agent to generate Plot's as per user query then saves them as artifact in the session
@@ -87,10 +86,7 @@ Visualization_agent = LlmAgent(
         4. You must save save results using 'save_artifact' tool to save file as an artifact with a filename.
         4. Describe the visualization, axes, and insights. If plotting fails, debug and retry once.
     """,
-    tools=[
-        AgentTool(coder_agent),
-        save_artifact
-    ]
+    tools=[AgentTool(coder_agent), save_artifact],
 )
 
 # Orchestrator: The main agent that designates tasks to different sub_agents
@@ -107,5 +103,5 @@ root_agent = LlmAgent(
         4. Use the Visualization tool for chart generation.
         5. Chain multiple tool calls when needed
     """,
-    sub_agents=[Parser_agent,Stats_agent,Visualization_agent],
+    sub_agents=[Parser_agent, Stats_agent, Visualization_agent],
 )
