@@ -32,7 +32,7 @@ async def main():
         artifact_service=artifact_service  # <--- Pass this here
     )
 
-    query_text = "Parse the file './data/sample.csv', get the stats, and visualize the distribution."
+    query_text = "Parse the file './data/sample.csv', get the statistics of the dataset."
     print(f"\n🔹 User Query: {query_text}\n")
 
     # 3. Run and Listen for Artifacts

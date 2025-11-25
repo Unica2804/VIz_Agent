@@ -3,7 +3,7 @@ import mimetypes
 import os
 import tempfile
 from pathlib import Path
-import types
+from google.genai import types
 from typing import Dict
 from urllib.parse import urlparse
 
@@ -12,12 +12,12 @@ import pdfplumber
 import requests
 from google.adk.tools import ToolContext
 
-from utils import artifact
+#from utils import artifact
 
 
 
 
-def data_parser(file_path_or_url: str,tool_context:ToolContext, file_type: str ) -> Dict:
+async def data_parser(file_path_or_url: str,tool_context:ToolContext, file_type: str ) -> Dict:
     """
     Parses data from a file path or URL, detects file type, and converts to JSON format.
 
@@ -91,7 +91,7 @@ def data_parser(file_path_or_url: str,tool_context:ToolContext, file_type: str )
         artifact_filename= f"{base_name}_parsed.json"
 
         # Save it to Session using Tool context
-        version=tool_context.save_artifact(artifact_filename, artifact_part)
+        version=await tool_context.save_artifact(artifact_filename, artifact_part)
 
 
         return {
