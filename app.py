@@ -3,6 +3,11 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.artifacts import InMemoryArtifactService
 import streamlit as st
 import asyncio
+from dotenv import load_dotenv
+
+# --- Load environment variables ---
+
+load_dotenv()
 
 # ---  Constants and Configuration ---
 APP_NAME = "streamlit_agent_app"
@@ -12,8 +17,8 @@ SESSION_ID = "session_001"
 
 # ---  Streamlit UI Logic ---
 
-st.set_page_config(page_title="ADK File Agent", layout="wide")
-st.title("🤖 ADK Agent File Reader")
+st.set_page_config(page_title="ADK Data Analyst", layout="wide")
+st.title("🤖 ADK Data Analyst")
 
 # Initialize ADK Services in Streamlit Session State (Persistent across reruns)
 if 'adk_services' not in st.session_state:
@@ -65,7 +70,7 @@ if prompt := st.chat_input("Ask something about the file..."):
         # If the user has a file uploaded, we tell the agent about it in the prompt
         # regardless of whether they typed the word "file".
         if uploaded_file.name not in prompt:
-            prompt += f"\n(System Note: The user has an active file uploaded named '{uploaded_file.name}'. Use it if relevant.)"
+            prompt += f"\n(System Note: The user has an active file uploaded named '{uploaded_file.name}'.)"
 
     # 3. Get Agent Response
     with st.chat_message("assistant"):
@@ -91,5 +96,5 @@ if prompt := st.chat_input("Ask something about the file..."):
     st.session_state.messages.append({
         "role": "assistant", 
         "content": response_text,
-        "images": images # Store images in history so they persist on re-run
+        "images": images 
     })

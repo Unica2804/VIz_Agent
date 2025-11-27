@@ -5,9 +5,7 @@ from google.adk.tools import AgentTool
 from google.adk.code_executors import BuiltInCodeExecutor
 from google.adk.models.google_llm import Gemini
 from google.genai import types
-from dotenv import load_dotenv
 
-load_dotenv()
 
 APP_NAME = "streamlit_agent_app"
 USER_ID = "streamlit_user"
@@ -54,7 +52,8 @@ async def get_agent_response(prompt, services, file_info=None):
                 - Data Quality: Count, Missing Value Counts
                 - Relationships: Correlation Matrix (only if there are 2 or more numeric columns)
             - **Validation**: Instruct the coder to explicitly check for and report skewness, potential outliers, and any data-quality issues (e.g., high missing values).
-            3. **Report**: Return a detailed text summary of these metrics and any quality flags raised.
+            3. **Report**: Return a detailed text summary of these metrics and any quality flags raised. Also give the user Suggestion on how to improve those.
+            4. **Advice**: If the user asks for advice on the data, Provide actionable insights based on the analysis.
         """,
         tools=[AgentTool(coder_agent), read_uploaded_file],
     )
@@ -85,7 +84,7 @@ async def get_agent_response(prompt, services, file_info=None):
             You are the Lead Coordinator of a data analysis team. Your sole responsibility is to route user requests to the correct specialist agent.
 
             1. **Analyze** the user's intent:
-            - If the user wants to *understand* the data (e.g., "describe", "summary", "analyze", "statistics", "check data quality"), delegate to **Stats_Agent**.
+            - If the user wants to *understand* the data (e.g., "describe", "summary", "analyze", "statistics", "check data quality", "advice") or any question on data, delegate to **Stats_Agent**.
             - If the user wants to *see* the data (e.g., "plot", "chart", "graph", "visualize"), delegate to **Visualization_Agent**.
 
             2. **Pass Context**: If the user mentions a filename, ensure you pass that filename clearly to the sub-agent so they know which file to process.
