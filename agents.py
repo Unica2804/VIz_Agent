@@ -130,7 +130,7 @@ async def get_agent_response(prompt, services, file_info=None):
     # Run Agent Loop
     async for event in runner.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=user_msg):
         
-        # 1. Check for Artifacts (Plots) saved during this step
+        # Check for Artifacts (Plots) saved during this step
         if event.actions and event.actions.artifact_delta:
             for filename in event.actions.artifact_delta:
                 # Simple check for image files
@@ -146,11 +146,11 @@ async def get_agent_response(prompt, services, file_info=None):
                     if artifact and artifact.inline_data:
                         generated_images.append({
                             "name": filename,
-                            "data": artifact.inline_data.data, # Raw bytes
+                            "data": artifact.inline_data.data,
                             "mime_type": artifact.inline_data.mime_type
                         })
 
-        # 2. Check for Final Text Response
+        # Check for Final Text Response
         if event.is_final_response():
             if event.content and event.content.parts:
                 response_text = event.content.parts[0].text

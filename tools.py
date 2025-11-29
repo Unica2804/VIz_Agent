@@ -11,9 +11,8 @@ async def read_uploaded_file(filename: str, tool_context: ToolContext) -> str:
     if not artifact:
         return f"Error: I could not find a file named '{filename}' in storage."
     
-    # Assuming text file for this demo. 
     try:
         content = artifact.inline_data.data.decode("utf-8")
-        return f"Content of {filename}:\n{content[:2000]}" # Limit characters for demo
+        return f"Content of {filename}:\n{content[:2000]}" 
     except Exception as e:
         return f"Error decoding file: {str(e)}"

@@ -24,7 +24,7 @@ st.title("🤖 ADK Data Analyst")
 if 'adk_services' not in st.session_state:
     st.session_state['adk_services'] = {
         'session': InMemorySessionService(),
-        'artifact': InMemoryArtifactService() # Stores files and generated plots in memory
+        'artifact': InMemoryArtifactService() 
     }
     # Create the session once
     asyncio.run(st.session_state['adk_services']['session'].create_session(
@@ -44,7 +44,6 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        # If this message has associated images, display them
         if "images" in message:
             for img in message["images"]:
                 st.image(
@@ -56,23 +55,20 @@ for message in st.session_state.messages:
 # Chat Input
 if prompt := st.chat_input("Ask something about the file..."):
     
-    # 1. Display user message
+    # Display user message
     st.chat_message("user").markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # 2. Prepare file info if a file exists
+    # Prepare file info if a file exists
     file_data = None
     if uploaded_file:
         # We pass the file data to the backend logic to ensure it's saved in ADK
         file_data = (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)
-        
-        # --- FIX: Aggressively hint the filename ---
-        # If the user has a file uploaded, we tell the agent about it in the prompt
-        # regardless of whether they typed the word "file".
+        # Optionally, inform the agent about the uploaded file in the prompt
         if uploaded_file.name not in prompt:
             prompt += f"\n(System Note: The user has an active file uploaded named '{uploaded_file.name}'.)"
 
-    # 3. Get Agent Response
+    # Get Agent Response
     with st.chat_message("assistant"):
         with st.spinner("Agent is thinking..."):
             # Run the async ADK logic
