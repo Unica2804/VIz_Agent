@@ -9,14 +9,11 @@ Viz Agent is a Google ADK multi-agent workflow. It help's You automate the borin
 - 📊 Automatic descriptive statistics, quality checks, and plotting with captured artifacts.
 
 ## Setup
-1. Create a virtual environment (Python 3.12) and install dependencies:
+1. Install uv package manager and install dependencies:
    ```sh
-   uv venv
-   source .venv/bin/activate
-   uv pip install -r <(python -m pip list --format=freeze)
-   ```
-   ```sh
-   pip install -e .
+   pip install uv 
+   
+   uv sync
    ```
 2. Provide required environment variables in `.env`. Use `.env.example` for creating env file (API keys for Google ADK/Gemini).
 3. Launch Streamlit:
@@ -28,6 +25,16 @@ Viz Agent is a Google ADK multi-agent workflow. It help's You automate the borin
 1. Upload a CSV or text file via the sidebar.
 2. Ask analytical or visualization questions; the orchestrator delegates to the appropriate agent.
 3. Generated plots appear inline, sourced from artifacts captured by the code executor.
+
+### New Chat & Session History
+This app supports multiple chat sessions. Use the "+ New Chat" button in the left sidebar to start a brand new chat session. When you click it:
+- The current chat messages are saved to the session history.
+- A new session ID is created, and the agent runs under that new session.
+- Artifacts and plots generated from previous sessions remain available under the chat history.
+
+You can view a previous session by clicking "View <session_id>" to inspect the messages and images in read-only mode, or click "Load <session_id>" to resume that session and continue the conversation.
+
+Note: The app validates user prompts and will reject empty or whitespace-only messages. If the AI API returns an error (400 or similar), the app displays the error in the UI rather than crashing.
 
 ## Project Structure
 - [app.py](app.py) — Streamlit UI + ADK service bootstrap.

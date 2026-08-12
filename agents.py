@@ -11,8 +11,11 @@ APP_NAME = "streamlit_agent_app"
 USER_ID = "streamlit_user"
 SESSION_ID = "session_001"
 
-async def get_agent_response(prompt, services, file_info=None):
+async def get_agent_response(prompt, services, file_info=None, session_id=None):
     """Runs the ADK Agent loop."""
+    # Guard against empty prompts - the genai client requires a non-empty text part
+    if not prompt or not str(prompt).strip():
+        raise ValueError("Empty prompt provided to agent")
     
     # Define Agent
     retry_config = types.HttpRetryOptions(attempts=3, initial_delay=1)
@@ -92,6 +95,10 @@ async def get_agent_response(prompt, services, file_info=None):
         sub_agents=[stats_agent, visualization_agent],
     )
 
+    # Determine which session_id to use for this run
+    if session_id is None:
+        session_id = SESSION_ID
+
     # Initialize Runner with the SHARED artifact service
     runner = Runner(
         agent=root_agent,
@@ -113,10 +120,11 @@ async def get_agent_response(prompt, services, file_info=None):
         )
         
         # Save to the centralized service
+        # Save the artifact under the active session id
         await services['artifact'].save_artifact(
             app_name=APP_NAME,
             user_id=USER_ID,
-            session_id=SESSION_ID,
+            session_id=session_id,
             filename=file_name,
             artifact=artifact_part
         )
@@ -128,7 +136,7 @@ async def get_agent_response(prompt, services, file_info=None):
     generated_images = [] # List to hold image data found during execution
 
     # Run Agent Loop
-    async for event in runner.run_async(user_id=USER_ID, session_id=SESSION_ID, new_message=user_msg):
+    async for event in runner.run_async(user_id=USER_ID, session_id=session_id, new_message=user_msg):
         
         # Check for Artifacts (Plots) saved during this step
         if event.actions and event.actions.artifact_delta:
@@ -139,7 +147,7 @@ async def get_agent_response(prompt, services, file_info=None):
                     artifact = await services['artifact'].load_artifact(
                         app_name=APP_NAME,
                         user_id=USER_ID,
-                        session_id=SESSION_ID,
+                        session_id=session_id,
                         filename=filename
                     )
                     
